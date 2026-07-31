@@ -1,6 +1,6 @@
 # Binaries
-whyfail
-kubectl-whyfail
+/whyfail
+/kubectl-whyfail
 *.exe
 *.exe~
 *.dll
