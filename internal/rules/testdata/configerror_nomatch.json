@@ -1,0 +1,74 @@
+{
+  "_comment": "Near miss: the container references a ConfigMap and a Secret, and it IS failing — but with an application error after startup, not a CreateContainerConfigError. The config resolved fine.",
+  "pod": {
+    "name": "notifier-84c6d7f9b-9wm3d",
+    "namespace": "platform",
+    "phase": "Running",
+    "nodeName": "worker-03",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [notifier]" }
+    ],
+    "startTime": "2026-07-31T09:38:00Z"
+  },
+  "containers": [
+    {
+      "name": "notifier",
+      "image": "platform/notifier:0.9.2",
+      "ready": false,
+      "started": true,
+      "restartCount": 3,
+      "state": {
+        "type": "Waiting",
+        "reason": "CrashLoopBackOff",
+        "message": "back-off 40s restarting failed container=notifier pod=notifier-84c6d7f9b-9wm3d_platform(2b3c4d5e-6f70-8192-a3b4-c5d6e7f80912)"
+      },
+      "lastState": {
+        "type": "Terminated",
+        "reason": "Error",
+        "exitCode": 1,
+        "startedAt": "2026-07-31T09:46:50Z",
+        "finishedAt": "2026-07-31T09:46:58Z"
+      },
+      "envRefs": [
+        { "from": "configMap", "name": "notifier-config", "key": "SMTP_HOST", "envVar": "SMTP_HOST" },
+        { "from": "secret", "name": "smtp-credentials", "key": "password", "envVar": "SMTP_PASSWORD" }
+      ],
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728
+      },
+      "logs": "",
+      "previousLogs": "2026-07-31T09:46:51Z INFO  notifier 0.9.2 starting\n2026-07-31T09:46:58Z FATAL smtp handshake rejected: 535 authentication failed"
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"platform/notifier:0.9.2\" already present on machine",
+      "source": "kubelet",
+      "count": 4,
+      "involvedKind": "Pod",
+      "involvedName": "notifier-84c6d7f9b-9wm3d",
+      "firstTimestamp": "2026-07-31T09:38:02Z",
+      "lastTimestamp": "2026-07-31T09:46:50Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container notifier in pod notifier-84c6d7f9b-9wm3d_platform(2b3c4d5e-6f70-8192-a3b4-c5d6e7f80912)",
+      "source": "kubelet",
+      "count": 3,
+      "involvedKind": "Pod",
+      "involvedName": "notifier-84c6d7f9b-9wm3d",
+      "firstTimestamp": "2026-07-31T09:41:10Z",
+      "lastTimestamp": "2026-07-31T09:47:30Z"
+    }
+  ],
+  "collectedAt": "2026-07-31T09:48:00Z"
+}

@@ -1,0 +1,72 @@
+{
+  "_comment": "Near miss: a genuine CrashLoopBackOff with a custom command — but the command runs fine and the app exits 1 on a config error. The entrypoint is innocent.",
+  "pod": {
+    "name": "migrator-6f4d8b7c9-vv7cd",
+    "namespace": "staging",
+    "phase": "Running",
+    "nodeName": "kind-worker2",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [migrator]" }
+    ],
+    "startTime": "2026-07-31T09:30:00Z"
+  },
+  "containers": [
+    {
+      "name": "migrator",
+      "image": "acme/migrator:1.0.4",
+      "ready": false,
+      "started": false,
+      "restartCount": 6,
+      "command": ["/app/migrate"],
+      "args": ["--up"],
+      "state": {
+        "type": "Waiting",
+        "reason": "CrashLoopBackOff",
+        "message": "back-off 2m40s restarting failed container=migrator pod=migrator-6f4d8b7c9-vv7cd_staging(7f809192-a3b4-c5d6-e7f8-091a2b3c4d5e)"
+      },
+      "lastState": {
+        "type": "Terminated",
+        "reason": "Error",
+        "exitCode": 1,
+        "startedAt": "2026-07-31T09:41:02Z",
+        "finishedAt": "2026-07-31T09:41:05Z"
+      },
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728
+      },
+      "logs": "",
+      "previousLogs": "2026-07-31T09:41:03Z INFO  migrator 1.0.4\n2026-07-31T09:41:05Z FATAL cannot connect to database: dial tcp 10.96.14.7:5432: connect: connection refused"
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"acme/migrator:1.0.4\" already present on machine",
+      "source": "kubelet",
+      "count": 7,
+      "involvedKind": "Pod",
+      "involvedName": "migrator-6f4d8b7c9-vv7cd",
+      "firstTimestamp": "2026-07-31T09:30:02Z",
+      "lastTimestamp": "2026-07-31T09:41:02Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container migrator in pod migrator-6f4d8b7c9-vv7cd_staging(7f809192-a3b4-c5d6-e7f8-091a2b3c4d5e)",
+      "source": "kubelet",
+      "count": 6,
+      "involvedKind": "Pod",
+      "involvedName": "migrator-6f4d8b7c9-vv7cd",
+      "firstTimestamp": "2026-07-31T09:31:20Z",
+      "lastTimestamp": "2026-07-31T09:42:10Z"
+    }
+  ],
+  "collectedAt": "2026-07-31T09:43:00Z"
+}

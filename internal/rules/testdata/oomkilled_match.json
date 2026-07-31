@@ -1,0 +1,78 @@
+{
+  "pod": {
+    "name": "image-resizer-6b8c4d9f7-mn2xz",
+    "namespace": "media",
+    "phase": "Running",
+    "nodeName": "gke-prod-pool-2-8f1a",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [resizer]" }
+    ],
+    "startTime": "2026-07-31T09:05:00Z"
+  },
+  "containers": [
+    {
+      "name": "resizer",
+      "image": "media/image-resizer:1.4.0",
+      "ready": false,
+      "started": false,
+      "restartCount": 5,
+      "state": {
+        "type": "Waiting",
+        "reason": "CrashLoopBackOff",
+        "message": "back-off 1m20s restarting failed container=resizer pod=image-resizer-6b8c4d9f7-mn2xz_media(7a1b2c3d-4e5f-6071-8293-a4b5c6d7e8f9)"
+      },
+      "lastState": {
+        "type": "Terminated",
+        "reason": "OOMKilled",
+        "exitCode": 137,
+        "startedAt": "2026-07-31T09:26:31Z",
+        "finishedAt": "2026-07-31T09:27:04Z"
+      },
+      "ports": [{ "containerPort": 8080, "protocol": "TCP" }],
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "limitsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728,
+        "limitsMemoryBytes": 134217728
+      },
+      "logs": "",
+      "previousLogs": "2026-07-31T09:26:31Z INFO  worker ready\n2026-07-31T09:26:58Z INFO  decoding upload 44e1b0.tiff (7680x4320)"
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"media/image-resizer:1.4.0\" already present on machine",
+      "source": "kubelet",
+      "count": 6,
+      "involvedKind": "Pod",
+      "involvedName": "image-resizer-6b8c4d9f7-mn2xz",
+      "firstTimestamp": "2026-07-31T09:05:03Z",
+      "lastTimestamp": "2026-07-31T09:26:31Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container resizer in pod image-resizer-6b8c4d9f7-mn2xz_media(7a1b2c3d-4e5f-6071-8293-a4b5c6d7e8f9)",
+      "source": "kubelet",
+      "count": 4,
+      "involvedKind": "Pod",
+      "involvedName": "image-resizer-6b8c4d9f7-mn2xz",
+      "firstTimestamp": "2026-07-31T09:12:44Z",
+      "lastTimestamp": "2026-07-31T09:28:10Z"
+    }
+  ],
+  "node": {
+    "name": "gke-prod-pool-2-8f1a",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:29:00Z"
+}

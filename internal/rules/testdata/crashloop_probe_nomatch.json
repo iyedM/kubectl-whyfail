@@ -1,0 +1,66 @@
+{
+  "_comment": "Near miss: a liveness probe IS configured, but it has never failed and the pod is healthy. Defining a probe must never be enough to accuse it.",
+  "pod": {
+    "name": "checkout-api-7d9f8b6c-qq41v",
+    "namespace": "production",
+    "phase": "Running",
+    "nodeName": "ip-10-0-3-17.eu-west-1.compute.internal",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "True" },
+      { "type": "ContainersReady", "status": "True" }
+    ],
+    "startTime": "2026-07-31T08:10:00Z"
+  },
+  "containers": [
+    {
+      "name": "api",
+      "image": "registry.internal/checkout-api:2.7.1",
+      "ready": true,
+      "started": true,
+      "restartCount": 0,
+      "state": { "type": "Running", "startedAt": "2026-07-31T08:10:12Z" },
+      "ports": [{ "name": "http", "containerPort": 8080, "protocol": "TCP" }],
+      "resources": {
+        "requestsMemory": "256Mi",
+        "limitsMemory": "512Mi",
+        "requestsMemoryBytes": 268435456,
+        "limitsMemoryBytes": 536870912
+      },
+      "livenessProbe": {
+        "kind": "http",
+        "path": "/healthz",
+        "port": "8080",
+        "scheme": "HTTP",
+        "initialDelaySeconds": 30,
+        "periodSeconds": 10,
+        "timeoutSeconds": 5,
+        "successThreshold": 1,
+        "failureThreshold": 3
+      },
+      "logs": "2026-07-31T08:10:12Z INFO  starting checkout-api 2.7.1\n2026-07-31T08:10:19Z INFO  listening on :8080"
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Started",
+      "message": "Started container api",
+      "source": "kubelet",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "checkout-api-7d9f8b6c-qq41v",
+      "firstTimestamp": "2026-07-31T08:10:12Z",
+      "lastTimestamp": "2026-07-31T08:10:12Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-0-3-17.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:54:00Z"
+}

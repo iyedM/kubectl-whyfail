@@ -1,0 +1,46 @@
+{
+  "pod": {
+    "name": "ml-trainer-0",
+    "namespace": "research",
+    "phase": "Pending",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "PodScheduled", "status": "False", "reason": "Unschedulable", "message": "0/6 nodes are available: 4 Insufficient memory, 2 Insufficient cpu. preemption: 0/6 nodes are available: 6 No preemption victims found for incoming pod." }
+    ]
+  },
+  "containers": [
+    {
+      "name": "trainer",
+      "image": "research/trainer:cuda12",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": { "type": "Waiting", "reason": "" },
+      "resources": {
+        "requestsCpu": "8",
+        "requestsMemory": "48Gi",
+        "limitsCpu": "8",
+        "limitsMemory": "48Gi",
+        "requestsCpuMillis": 8000,
+        "limitsCpuMillis": 8000,
+        "requestsMemoryBytes": 51539607552,
+        "limitsMemoryBytes": 51539607552
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Warning",
+      "reason": "FailedScheduling",
+      "message": "0/6 nodes are available: 4 Insufficient memory, 2 Insufficient cpu. preemption: 0/6 nodes are available: 6 No preemption victims found for incoming pod.",
+      "source": "default-scheduler",
+      "count": 12,
+      "involvedKind": "Pod",
+      "involvedName": "ml-trainer-0",
+      "firstTimestamp": "2026-07-31T09:20:00Z",
+      "lastTimestamp": "2026-07-31T09:48:00Z"
+    }
+  ],
+  "collectedAt": "2026-07-31T09:50:00Z"
+}

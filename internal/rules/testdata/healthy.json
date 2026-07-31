@@ -1,0 +1,161 @@
+{
+  "_comment": "A completely healthy pod. Every rule is asserted against this: no rule may ever fire here, and RunAll must fall through to the LLM.",
+  "pod": {
+    "name": "payments-api-5c9d7f8b6-k3m2v",
+    "namespace": "production",
+    "phase": "Running",
+    "nodeName": "ip-10-0-3-17.eu-west-1.compute.internal",
+    "qosClass": "Guaranteed",
+    "restartPolicy": "Always",
+    "serviceAccount": "payments-api",
+    "volumes": [
+      { "name": "config", "type": "configMap", "source": "payments-config" },
+      { "name": "data", "type": "persistentVolumeClaim", "source": "payments-data" }
+    ],
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "True" },
+      { "type": "ContainersReady", "status": "True" },
+      { "type": "PodScheduled", "status": "True" }
+    ],
+    "startTime": "2026-07-31T06:00:00Z"
+  },
+  "containers": [
+    {
+      "name": "init-schema",
+      "image": "acme/payments-api:3.2.0",
+      "isInit": true,
+      "ready": true,
+      "started": true,
+      "restartCount": 0,
+      "state": {
+        "type": "Terminated",
+        "reason": "Completed",
+        "exitCode": 0,
+        "startedAt": "2026-07-31T06:00:04Z",
+        "finishedAt": "2026-07-31T06:00:11Z"
+      },
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "limitsCpu": "100m",
+        "limitsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "limitsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728,
+        "limitsMemoryBytes": 134217728
+      },
+      "logs": "schema up to date (migration 214)"
+    },
+    {
+      "name": "api",
+      "image": "acme/payments-api:3.2.0",
+      "imageID": "acme/payments-api@sha256:9f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a0",
+      "ready": true,
+      "started": true,
+      "restartCount": 0,
+      "state": { "type": "Running", "startedAt": "2026-07-31T06:00:12Z" },
+      "ports": [
+        { "name": "http", "containerPort": 8080, "protocol": "TCP" },
+        { "name": "metrics", "containerPort": 9090, "protocol": "TCP" }
+      ],
+      "resources": {
+        "requestsCpu": "500m",
+        "requestsMemory": "512Mi",
+        "limitsCpu": "500m",
+        "limitsMemory": "512Mi",
+        "requestsCpuMillis": 500,
+        "limitsCpuMillis": 500,
+        "requestsMemoryBytes": 536870912,
+        "limitsMemoryBytes": 536870912
+      },
+      "livenessProbe": {
+        "kind": "http",
+        "path": "/healthz",
+        "port": "8080",
+        "scheme": "HTTP",
+        "initialDelaySeconds": 20,
+        "periodSeconds": 10,
+        "timeoutSeconds": 3,
+        "successThreshold": 1,
+        "failureThreshold": 3
+      },
+      "readinessProbe": {
+        "kind": "http",
+        "path": "/ready",
+        "port": "8080",
+        "scheme": "HTTP",
+        "initialDelaySeconds": 5,
+        "periodSeconds": 10,
+        "timeoutSeconds": 2,
+        "successThreshold": 1,
+        "failureThreshold": 3
+      },
+      "envRefs": [
+        { "from": "configMap", "name": "payments-config", "key": "LOG_LEVEL", "envVar": "LOG_LEVEL" },
+        { "from": "secret", "name": "payments-db", "key": "dsn", "envVar": "DATABASE_URL" }
+      ],
+      "mounts": [
+        { "volumeName": "config", "mountPath": "/etc/payments", "readOnly": true },
+        { "volumeName": "data", "mountPath": "/var/lib/payments" }
+      ],
+      "logs": "2026-07-31T06:00:12Z INFO  payments-api 3.2.0 listening on :8080\n2026-07-31T09:47:00Z INFO  processed 18422 payments in the last hour"
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned production/payments-api-5c9d7f8b6-k3m2v to ip-10-0-3-17.eu-west-1.compute.internal",
+      "source": "default-scheduler",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "payments-api-5c9d7f8b6-k3m2v",
+      "firstTimestamp": "2026-07-31T06:00:00Z",
+      "lastTimestamp": "2026-07-31T06:00:00Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Successfully pulled image \"acme/payments-api:3.2.0\" in 3.412s (3.412s including waiting)",
+      "source": "kubelet",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "payments-api-5c9d7f8b6-k3m2v",
+      "firstTimestamp": "2026-07-31T06:00:03Z",
+      "lastTimestamp": "2026-07-31T06:00:03Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Started",
+      "message": "Started container api",
+      "source": "kubelet",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "payments-api-5c9d7f8b6-k3m2v",
+      "firstTimestamp": "2026-07-31T06:00:12Z",
+      "lastTimestamp": "2026-07-31T06:00:12Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-0-3-17.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [
+      { "type": "MemoryPressure", "status": "False" },
+      { "type": "DiskPressure", "status": "False" },
+      { "type": "Ready", "status": "True" }
+    ]
+  },
+  "pvcs": [
+    {
+      "name": "payments-data",
+      "phase": "Bound",
+      "storageClass": "gp3",
+      "volumeName": "pvc-1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f809",
+      "requestedStorage": "20Gi",
+      "accessModes": ["ReadWriteOnce"]
+    }
+  ],
+  "collectedAt": "2026-07-31T09:48:00Z"
+}

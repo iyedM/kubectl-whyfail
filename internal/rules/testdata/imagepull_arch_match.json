@@ -1,0 +1,68 @@
+{
+  "pod": {
+    "name": "api-gateway-6d7c8f5b9-x4kn6",
+    "namespace": "edge",
+    "phase": "Pending",
+    "nodeName": "ip-10-0-4-22.eu-west-1.compute.internal",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [gateway]" },
+      { "type": "PodScheduled", "status": "True" }
+    ],
+    "startTime": "2026-07-31T09:39:00Z"
+  },
+  "containers": [
+    {
+      "name": "gateway",
+      "image": "registry.internal/api-gateway:dev-local",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": {
+        "type": "Waiting",
+        "reason": "ErrImagePull",
+        "message": "rpc error: code = NotFound desc = failed to pull and unpack image \"registry.internal/api-gateway:dev-local\": no match for platform in manifest: not found"
+      },
+      "resources": {
+        "requestsCpu": "200m",
+        "requestsMemory": "256Mi",
+        "requestsCpuMillis": 200,
+        "requestsMemoryBytes": 268435456
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulling",
+      "message": "Pulling image \"registry.internal/api-gateway:dev-local\"",
+      "source": "kubelet",
+      "count": 3,
+      "involvedKind": "Pod",
+      "involvedName": "api-gateway-6d7c8f5b9-x4kn6",
+      "firstTimestamp": "2026-07-31T09:39:02Z",
+      "lastTimestamp": "2026-07-31T09:41:15Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Failed to pull image \"registry.internal/api-gateway:dev-local\": no matching manifest for linux/amd64 in the manifest list entries",
+      "source": "kubelet",
+      "count": 3,
+      "involvedKind": "Pod",
+      "involvedName": "api-gateway-6d7c8f5b9-x4kn6",
+      "firstTimestamp": "2026-07-31T09:39:05Z",
+      "lastTimestamp": "2026-07-31T09:41:18Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-0-4-22.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "labels": { "kubernetes.io/arch": "amd64", "kubernetes.io/os": "linux" },
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:42:00Z"
+}

@@ -1,0 +1,77 @@
+{
+  "pod": {
+    "name": "frontend-79c5b8d64-t9pw2",
+    "namespace": "web",
+    "phase": "Running",
+    "nodeName": "worker-01",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [frontend]" },
+      { "type": "ContainersReady", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [frontend]" },
+      { "type": "PodScheduled", "status": "True" }
+    ],
+    "startTime": "2026-07-31T09:12:00Z"
+  },
+  "containers": [
+    {
+      "name": "frontend",
+      "image": "web/frontend:4.8.0",
+      "ready": false,
+      "started": true,
+      "restartCount": 0,
+      "state": { "type": "Running", "startedAt": "2026-07-31T09:12:07Z" },
+      "ports": [{ "name": "http", "containerPort": 3000, "protocol": "TCP" }],
+      "readinessProbe": {
+        "kind": "http",
+        "path": "/ready",
+        "port": "8080",
+        "scheme": "HTTP",
+        "initialDelaySeconds": 5,
+        "periodSeconds": 10,
+        "timeoutSeconds": 1,
+        "successThreshold": 1,
+        "failureThreshold": 3
+      },
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728
+      },
+      "logs": "2026-07-31T09:12:07Z INFO  next.js ready on http://0.0.0.0:3000\n2026-07-31T09:12:07Z INFO  serving static assets from /app/.next"
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Started",
+      "message": "Started container frontend",
+      "source": "kubelet",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "frontend-79c5b8d64-t9pw2",
+      "firstTimestamp": "2026-07-31T09:12:07Z",
+      "lastTimestamp": "2026-07-31T09:12:07Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: Get \"http://10.244.1.19:8080/ready\": dial tcp 10.244.1.19:8080: connect: connection refused",
+      "source": "kubelet",
+      "count": 214,
+      "involvedKind": "Pod",
+      "involvedName": "frontend-79c5b8d64-t9pw2",
+      "firstTimestamp": "2026-07-31T09:12:13Z",
+      "lastTimestamp": "2026-07-31T09:47:43Z"
+    }
+  ],
+  "node": {
+    "name": "worker-01",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:48:00Z"
+}

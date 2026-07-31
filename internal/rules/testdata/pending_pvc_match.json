@@ -1,0 +1,68 @@
+{
+  "pod": {
+    "name": "postgres-0",
+    "namespace": "data",
+    "phase": "Pending",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "volumes": [
+      { "name": "data", "type": "persistentVolumeClaim", "source": "data-postgres-0" }
+    ],
+    "conditions": [
+      { "type": "PodScheduled", "status": "False", "reason": "Unschedulable", "message": "0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling." }
+    ]
+  },
+  "containers": [
+    {
+      "name": "postgres",
+      "image": "postgres:16.3",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": { "type": "Waiting", "reason": "" },
+      "mounts": [{ "volumeName": "data", "mountPath": "/var/lib/postgresql/data" }],
+      "resources": {
+        "requestsCpu": "500m",
+        "requestsMemory": "1Gi",
+        "requestsCpuMillis": 500,
+        "requestsMemoryBytes": 1073741824
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Warning",
+      "reason": "FailedScheduling",
+      "message": "0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.",
+      "source": "default-scheduler",
+      "count": 14,
+      "involvedKind": "Pod",
+      "involvedName": "postgres-0",
+      "firstTimestamp": "2026-07-31T09:10:00Z",
+      "lastTimestamp": "2026-07-31T09:49:00Z"
+    }
+  ],
+  "pvcs": [
+    {
+      "name": "data-postgres-0",
+      "phase": "Pending",
+      "storageClass": "fast-ssd",
+      "requestedStorage": "100Gi",
+      "accessModes": ["ReadWriteOnce"],
+      "events": [
+        {
+          "type": "Warning",
+          "reason": "ProvisioningFailed",
+          "message": "storageclass.storage.k8s.io \"fast-ssd\" not found",
+          "source": "persistentvolume-controller",
+          "count": 21,
+          "involvedKind": "PersistentVolumeClaim",
+          "involvedName": "data-postgres-0",
+          "firstTimestamp": "2026-07-31T09:10:01Z",
+          "lastTimestamp": "2026-07-31T09:49:01Z"
+        }
+      ]
+    }
+  ],
+  "collectedAt": "2026-07-31T09:50:00Z"
+}

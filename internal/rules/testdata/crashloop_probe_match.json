@@ -1,0 +1,114 @@
+{
+  "pod": {
+    "name": "checkout-api-7d9f8b6c-x2kpl",
+    "namespace": "production",
+    "phase": "Running",
+    "nodeName": "ip-10-0-3-17.eu-west-1.compute.internal",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [api]" },
+      { "type": "ContainersReady", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [api]" }
+    ],
+    "startTime": "2026-07-31T09:41:00Z"
+  },
+  "containers": [
+    {
+      "name": "api",
+      "image": "registry.internal/checkout-api:2.7.1",
+      "ready": false,
+      "started": false,
+      "restartCount": 7,
+      "state": {
+        "type": "Waiting",
+        "reason": "CrashLoopBackOff",
+        "message": "back-off 2m40s restarting failed container=api pod=checkout-api-7d9f8b6c-x2kpl_production(1f2c8a5e-6b3d-4f21-9a77-0d1e2c3b4a55)"
+      },
+      "lastState": {
+        "type": "Terminated",
+        "reason": "Error",
+        "exitCode": 137,
+        "startedAt": "2026-07-31T09:52:10Z",
+        "finishedAt": "2026-07-31T09:52:41Z"
+      },
+      "ports": [{ "name": "http", "containerPort": 8080, "protocol": "TCP" }],
+      "resources": {
+        "requestsCpu": "250m",
+        "requestsMemory": "256Mi",
+        "limitsCpu": "1",
+        "limitsMemory": "512Mi",
+        "requestsCpuMillis": 250,
+        "limitsCpuMillis": 1000,
+        "requestsMemoryBytes": 268435456,
+        "limitsMemoryBytes": 536870912
+      },
+      "livenessProbe": {
+        "kind": "http",
+        "path": "/healthz",
+        "port": "8080",
+        "scheme": "HTTP",
+        "initialDelaySeconds": 3,
+        "periodSeconds": 5,
+        "timeoutSeconds": 1,
+        "successThreshold": 1,
+        "failureThreshold": 2
+      },
+      "logs": "2026-07-31T09:52:12Z INFO  starting checkout-api 2.7.1\n2026-07-31T09:52:12Z INFO  connecting to postgres primary\n2026-07-31T09:52:18Z INFO  running 34 pending migrations",
+      "previousLogs": "2026-07-31T09:51:40Z INFO  starting checkout-api 2.7.1\n2026-07-31T09:51:40Z INFO  connecting to postgres primary\n2026-07-31T09:51:46Z INFO  running 34 pending migrations"
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"registry.internal/checkout-api:2.7.1\" already present on machine",
+      "source": "kubelet",
+      "count": 8,
+      "involvedKind": "Pod",
+      "involvedName": "checkout-api-7d9f8b6c-x2kpl",
+      "firstTimestamp": "2026-07-31T09:41:05Z",
+      "lastTimestamp": "2026-07-31T09:52:10Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Unhealthy",
+      "message": "Liveness probe failed: Get \"http://10.0.3.42:8080/healthz\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+      "source": "kubelet",
+      "count": 21,
+      "involvedKind": "Pod",
+      "involvedName": "checkout-api-7d9f8b6c-x2kpl",
+      "firstTimestamp": "2026-07-31T09:41:14Z",
+      "lastTimestamp": "2026-07-31T09:52:38Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Killing",
+      "message": "Container api failed liveness probe, will be restarted",
+      "source": "kubelet",
+      "count": 7,
+      "involvedKind": "Pod",
+      "involvedName": "checkout-api-7d9f8b6c-x2kpl",
+      "firstTimestamp": "2026-07-31T09:41:16Z",
+      "lastTimestamp": "2026-07-31T09:52:41Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container api in pod checkout-api-7d9f8b6c-x2kpl_production(1f2c8a5e-6b3d-4f21-9a77-0d1e2c3b4a55)",
+      "source": "kubelet",
+      "count": 5,
+      "involvedKind": "Pod",
+      "involvedName": "checkout-api-7d9f8b6c-x2kpl",
+      "firstTimestamp": "2026-07-31T09:44:02Z",
+      "lastTimestamp": "2026-07-31T09:53:30Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-0-3-17.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:54:00Z"
+}

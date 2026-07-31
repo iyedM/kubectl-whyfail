@@ -1,0 +1,90 @@
+{
+  "pod": {
+    "name": "billing-worker-5f7d9c8b4-h6rt2",
+    "namespace": "billing",
+    "phase": "Pending",
+    "nodeName": "ip-10-0-1-88.eu-west-1.compute.internal",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "serviceAccount": "billing-worker",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [worker]" },
+      { "type": "PodScheduled", "status": "True" }
+    ],
+    "startTime": "2026-07-31T09:44:00Z"
+  },
+  "containers": [
+    {
+      "name": "worker",
+      "image": "ghcr.io/acme/billing-worker:v2.3.1",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": {
+        "type": "Waiting",
+        "reason": "ImagePullBackOff",
+        "message": "Back-off pulling image \"ghcr.io/acme/billing-worker:v2.3.1\""
+      },
+      "resources": {
+        "requestsCpu": "200m",
+        "requestsMemory": "256Mi",
+        "requestsCpuMillis": 200,
+        "requestsMemoryBytes": 268435456
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned billing/billing-worker-5f7d9c8b4-h6rt2 to ip-10-0-1-88.eu-west-1.compute.internal",
+      "source": "default-scheduler",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "billing-worker-5f7d9c8b4-h6rt2",
+      "firstTimestamp": "2026-07-31T09:44:00Z",
+      "lastTimestamp": "2026-07-31T09:44:00Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Pulling",
+      "message": "Pulling image \"ghcr.io/acme/billing-worker:v2.3.1\"",
+      "source": "kubelet",
+      "count": 4,
+      "involvedKind": "Pod",
+      "involvedName": "billing-worker-5f7d9c8b4-h6rt2",
+      "firstTimestamp": "2026-07-31T09:44:02Z",
+      "lastTimestamp": "2026-07-31T09:46:31Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Failed to pull image \"ghcr.io/acme/billing-worker:v2.3.1\": rpc error: code = NotFound desc = failed to pull and unpack image \"ghcr.io/acme/billing-worker:v2.3.1\": failed to resolve reference \"ghcr.io/acme/billing-worker:v2.3.1\": ghcr.io/acme/billing-worker:v2.3.1: not found",
+      "source": "kubelet",
+      "count": 4,
+      "involvedKind": "Pod",
+      "involvedName": "billing-worker-5f7d9c8b4-h6rt2",
+      "firstTimestamp": "2026-07-31T09:44:04Z",
+      "lastTimestamp": "2026-07-31T09:46:33Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off pulling image \"ghcr.io/acme/billing-worker:v2.3.1\"",
+      "source": "kubelet",
+      "count": 7,
+      "involvedKind": "Pod",
+      "involvedName": "billing-worker-5f7d9c8b4-h6rt2",
+      "firstTimestamp": "2026-07-31T09:44:30Z",
+      "lastTimestamp": "2026-07-31T09:47:12Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-0-1-88.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:47:30Z"
+}

@@ -1,0 +1,35 @@
+# Binaries
+whyfail
+kubectl-whyfail
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test artefacts
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Dependency directory (vendoring is not used here)
+vendor/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Never commit an API key
+.env
+.env.*
+!.env.example

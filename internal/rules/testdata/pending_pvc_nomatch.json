@@ -1,0 +1,57 @@
+{
+  "_comment": "Near miss: a Pending pod that also mounts a PVC — but the PVC is Bound and the pod is stuck on CPU capacity instead. Mounting storage must not make this a storage bug.",
+  "pod": {
+    "name": "postgres-1",
+    "namespace": "data",
+    "phase": "Pending",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "volumes": [
+      { "name": "data", "type": "persistentVolumeClaim", "source": "data-postgres-1" }
+    ],
+    "conditions": [
+      { "type": "PodScheduled", "status": "False", "reason": "Unschedulable", "message": "0/3 nodes are available: 3 Insufficient cpu. preemption: 0/3 nodes are available: 3 No preemption victims found for incoming pod." }
+    ]
+  },
+  "containers": [
+    {
+      "name": "postgres",
+      "image": "postgres:16.3",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": { "type": "Waiting", "reason": "" },
+      "mounts": [{ "volumeName": "data", "mountPath": "/var/lib/postgresql/data" }],
+      "resources": {
+        "requestsCpu": "16",
+        "requestsMemory": "1Gi",
+        "requestsCpuMillis": 16000,
+        "requestsMemoryBytes": 1073741824
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Warning",
+      "reason": "FailedScheduling",
+      "message": "0/3 nodes are available: 3 Insufficient cpu. preemption: 0/3 nodes are available: 3 No preemption victims found for incoming pod.",
+      "source": "default-scheduler",
+      "count": 11,
+      "involvedKind": "Pod",
+      "involvedName": "postgres-1",
+      "firstTimestamp": "2026-07-31T09:10:00Z",
+      "lastTimestamp": "2026-07-31T09:49:00Z"
+    }
+  ],
+  "pvcs": [
+    {
+      "name": "data-postgres-1",
+      "phase": "Bound",
+      "storageClass": "standard",
+      "volumeName": "pvc-8a1b2c3d-4e5f-6071-8293-a4b5c6d7e8f9",
+      "requestedStorage": "100Gi",
+      "accessModes": ["ReadWriteOnce"]
+    }
+  ],
+  "collectedAt": "2026-07-31T09:50:00Z"
+}

@@ -1,0 +1,68 @@
+{
+  "pod": {
+    "name": "log-shipper-2q8vn",
+    "namespace": "observability",
+    "phase": "Failed",
+    "reason": "Evicted",
+    "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 2Gi, available: 1.1Gi. Container shipper was using 14Gi, request is 0.",
+    "nodeName": "ip-10-0-2-51.eu-west-1.compute.internal",
+    "qosClass": "BestEffort",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Ready", "status": "False", "reason": "PodFailed" }
+    ],
+    "startTime": "2026-07-30T22:14:00Z"
+  },
+  "containers": [
+    {
+      "name": "shipper",
+      "image": "observability/log-shipper:3.1.0",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": {
+        "type": "Terminated",
+        "reason": "ContainerStatusUnknown",
+        "message": "The container could not be located when the pod was deleted.  The container used to be Running",
+        "exitCode": 137,
+        "startedAt": "2026-07-30T22:14:08Z",
+        "finishedAt": "2026-07-31T09:31:22Z"
+      },
+      "resources": {}
+    }
+  ],
+  "events": [
+    {
+      "type": "Warning",
+      "reason": "Evicted",
+      "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 2Gi, available: 1.1Gi. Container shipper was using 14Gi, request is 0.",
+      "source": "kubelet",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "log-shipper-2q8vn",
+      "firstTimestamp": "2026-07-31T09:31:20Z",
+      "lastTimestamp": "2026-07-31T09:31:20Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Killing",
+      "message": "Stopping container shipper",
+      "source": "kubelet",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "log-shipper-2q8vn",
+      "firstTimestamp": "2026-07-31T09:31:21Z",
+      "lastTimestamp": "2026-07-31T09:31:21Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-0-2-51.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [
+      { "type": "DiskPressure", "status": "True", "reason": "KubeletHasDiskPressure", "message": "kubelet has disk pressure" },
+      { "type": "Ready", "status": "True" }
+    ]
+  },
+  "collectedAt": "2026-07-31T09:35:00Z"
+}

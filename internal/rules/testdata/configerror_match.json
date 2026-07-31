@@ -1,0 +1,82 @@
+{
+  "pod": {
+    "name": "notifier-84c6d7f9b-4kqp8",
+    "namespace": "platform",
+    "phase": "Pending",
+    "nodeName": "worker-03",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [notifier]" },
+      { "type": "PodScheduled", "status": "True" }
+    ],
+    "startTime": "2026-07-31T09:38:00Z"
+  },
+  "containers": [
+    {
+      "name": "notifier",
+      "image": "platform/notifier:0.9.2",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": {
+        "type": "Waiting",
+        "reason": "CreateContainerConfigError",
+        "message": "configmap \"notifier-config\" not found"
+      },
+      "envRefs": [
+        { "from": "configMap", "name": "notifier-config", "key": "SMTP_HOST", "envVar": "SMTP_HOST" },
+        { "from": "secret", "name": "smtp-credentials", "key": "password", "envVar": "SMTP_PASSWORD" }
+      ],
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned platform/notifier-84c6d7f9b-4kqp8 to worker-03",
+      "source": "default-scheduler",
+      "count": 1,
+      "involvedKind": "Pod",
+      "involvedName": "notifier-84c6d7f9b-4kqp8",
+      "firstTimestamp": "2026-07-31T09:38:00Z",
+      "lastTimestamp": "2026-07-31T09:38:00Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"platform/notifier:0.9.2\" already present on machine",
+      "source": "kubelet",
+      "count": 9,
+      "involvedKind": "Pod",
+      "involvedName": "notifier-84c6d7f9b-4kqp8",
+      "firstTimestamp": "2026-07-31T09:38:02Z",
+      "lastTimestamp": "2026-07-31T09:47:15Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Error: configmap \"notifier-config\" not found",
+      "source": "kubelet",
+      "count": 9,
+      "involvedKind": "Pod",
+      "involvedName": "notifier-84c6d7f9b-4kqp8",
+      "firstTimestamp": "2026-07-31T09:38:02Z",
+      "lastTimestamp": "2026-07-31T09:47:15Z"
+    }
+  ],
+  "node": {
+    "name": "worker-03",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:48:00Z"
+}

@@ -1,0 +1,89 @@
+{
+  "pod": {
+    "name": "migrator-6f4d8b7c9-lp3nz",
+    "namespace": "staging",
+    "phase": "Running",
+    "nodeName": "kind-worker2",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [migrator]" }
+    ],
+    "startTime": "2026-07-31T09:30:00Z"
+  },
+  "containers": [
+    {
+      "name": "migrator",
+      "image": "acme/migrator:1.0.4",
+      "ready": false,
+      "started": false,
+      "restartCount": 6,
+      "command": ["/app/migrate.sh"],
+      "args": ["--up"],
+      "state": {
+        "type": "Waiting",
+        "reason": "CrashLoopBackOff",
+        "message": "back-off 2m40s restarting failed container=migrator pod=migrator-6f4d8b7c9-lp3nz_staging(5e6f7081-92a3-b4c5-d6e7-f8091a2b3c4d)"
+      },
+      "lastState": {
+        "type": "Terminated",
+        "reason": "StartError",
+        "message": "failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: exec: \"/app/migrate.sh\": stat /app/migrate.sh: no such file or directory: unknown",
+        "exitCode": 127,
+        "startedAt": "2026-07-31T09:41:02Z",
+        "finishedAt": "2026-07-31T09:41:02Z"
+      },
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728
+      },
+      "logs": "",
+      "previousLogs": ""
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"acme/migrator:1.0.4\" already present on machine",
+      "source": "kubelet",
+      "count": 7,
+      "involvedKind": "Pod",
+      "involvedName": "migrator-6f4d8b7c9-lp3nz",
+      "firstTimestamp": "2026-07-31T09:30:02Z",
+      "lastTimestamp": "2026-07-31T09:41:02Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Error: failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: exec: \"/app/migrate.sh\": stat /app/migrate.sh: no such file or directory: unknown",
+      "source": "kubelet",
+      "count": 7,
+      "involvedKind": "Pod",
+      "involvedName": "migrator-6f4d8b7c9-lp3nz",
+      "firstTimestamp": "2026-07-31T09:30:03Z",
+      "lastTimestamp": "2026-07-31T09:41:02Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container migrator in pod migrator-6f4d8b7c9-lp3nz_staging(5e6f7081-92a3-b4c5-d6e7-f8091a2b3c4d)",
+      "source": "kubelet",
+      "count": 6,
+      "involvedKind": "Pod",
+      "involvedName": "migrator-6f4d8b7c9-lp3nz",
+      "firstTimestamp": "2026-07-31T09:31:20Z",
+      "lastTimestamp": "2026-07-31T09:42:10Z"
+    }
+  ],
+  "node": {
+    "name": "kind-worker2",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T09:43:00Z"
+}

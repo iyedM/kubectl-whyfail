@@ -1,0 +1,44 @@
+{
+  "_comment": "Near miss: Pending and unschedulable, but because of a nodeSelector that matches nothing. There is no 'Insufficient <resource>' anywhere, so this is not a capacity problem.",
+  "pod": {
+    "name": "ml-trainer-1",
+    "namespace": "research",
+    "phase": "Pending",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "nodeSelector": { "accelerator": "nvidia-h100" },
+    "conditions": [
+      { "type": "PodScheduled", "status": "False", "reason": "Unschedulable", "message": "0/6 nodes are available: 6 node(s) didn't match Pod's node affinity/selector." }
+    ]
+  },
+  "containers": [
+    {
+      "name": "trainer",
+      "image": "research/trainer:cuda12",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": { "type": "Waiting", "reason": "" },
+      "resources": {
+        "requestsCpu": "500m",
+        "requestsMemory": "1Gi",
+        "requestsCpuMillis": 500,
+        "requestsMemoryBytes": 1073741824
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Warning",
+      "reason": "FailedScheduling",
+      "message": "0/6 nodes are available: 6 node(s) didn't match Pod's node affinity/selector. preemption: 0/6 nodes are available: 6 Preemption is not helpful for scheduling.",
+      "source": "default-scheduler",
+      "count": 9,
+      "involvedKind": "Pod",
+      "involvedName": "ml-trainer-1",
+      "firstTimestamp": "2026-07-31T09:20:00Z",
+      "lastTimestamp": "2026-07-31T09:48:00Z"
+    }
+  ],
+  "collectedAt": "2026-07-31T09:50:00Z"
+}
