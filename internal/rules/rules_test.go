@@ -141,6 +141,253 @@ func TestImagePullRule(t *testing.T) {
 	assertDoesNotMatch(t, imagePullRule, "healthy")
 }
 
+// TestImagePullPrefersInformativeEvent reproduces a real k3d failure: the
+// kubelet emits the registry's actual error once, then repeats
+// "Error: ErrImagePull" and "Error: ImagePullBackOff" on every retry. Reading
+// the most recent Failed event therefore loses the cause and drops the
+// diagnosis into the generic branch.
+func TestImagePullPrefersInformativeEvent(t *testing.T) {
+	d := assertMatches(t, imagePullRule, "imagepull_dns_match")
+
+	// The real error must be the one quoted back to the user.
+	if !strings.Contains(d.Cause, "dial tcp") || !strings.Contains(d.Cause, "registry-1.docker.io") {
+		t.Errorf("cause should quote the DNS error from the first Failed event, got:\n%s", d.Cause)
+	}
+
+	// The generic repeats must never be what "Registry said".
+	for _, generic := range []string{"Registry said: Error: ImagePullBackOff", "Registry said: Error: ErrImagePull"} {
+		if strings.Contains(d.Cause, generic) {
+			t.Errorf("the kubelet's generic retry message won over the real error: %q", generic)
+		}
+	}
+
+	// It must land in the network branch, not the default one.
+	if !strings.Contains(d.Cause, "could not reach the registry") {
+		t.Errorf("expected the network/DNS branch, got:\n%s", d.Cause)
+	}
+	if strings.Contains(d.Suggestion, "Verify the image exists") {
+		t.Errorf("fell through to the default branch:\n%s", d.Suggestion)
+	}
+}
+
+// TestImagePullClassificationAcrossEnvironments is the portability guard.
+//
+// The wording of a pull error comes from the container runtime and the
+// registry, never from Kubernetes, so a rule tuned on one cluster silently
+// misclassifies on the next. Each case below is a real message from a
+// different runtime/registry combination.
+func TestImagePullClassificationAcrossEnvironments(t *testing.T) {
+	cases := []struct {
+		env    string
+		reason string
+		msg    string
+		want   imagePullKind
+	}{
+		// Rate limiting — the most common production pull failure.
+		{
+			env:  "containerd + Docker Hub, anonymous quota",
+			msg:  `failed to copy: httpReadSeeker: failed open: unexpected status code 429 Too Many Requests - Server message: toomanyrequests: You have reached your pull rate limit.`,
+			want: pullRateLimited,
+		},
+		{
+			env:  "Docker daemon + Docker Hub quota",
+			msg:  `Error response from daemon: toomanyrequests: You have reached your pull rate limit.`,
+			want: pullRateLimited,
+		},
+
+		// Credentials, across four registries and three runtimes.
+		{
+			env:  "CRI-O + ECR, expired token",
+			msg:  `initializing source docker://123.dkr.ecr.eu-west-1.amazonaws.com/app:v1: reading manifest v1: denied: Your authorization token has expired. Reauthenticate and try again.`,
+			want: pullAuth,
+		},
+		{
+			env:  "Docker daemon + private repo",
+			msg:  `Error response from daemon: pull access denied for acme/private, repository does not exist or may require 'docker login': denied: requested access to the resource is denied`,
+			want: pullAuth,
+		},
+		{
+			env:  "containerd + Artifact Registry, IAM denied",
+			msg:  `failed to resolve reference "europe-docker.pkg.dev/proj/repo/app:v3": unexpected status from HEAD request: 403 Forbidden`,
+			want: pullAuth,
+		},
+		{
+			env:  "containerd + ACR",
+			msg:  `failed to resolve reference "acme.azurecr.io/app:v1": unauthorized: authentication required, visit https://aka.ms/acr/authorization`,
+			want: pullAuth,
+		},
+		{
+			env:  "containerd + Harbor, robot account scope",
+			msg:  `failed to authorize: failed to fetch anonymous token: unexpected status: 401 Unauthorized: insufficient_scope`,
+			want: pullAuth,
+		},
+
+		// Network, DNS, proxy and TLS.
+		{
+			env:  "k3d + Docker Hub, DNS EAI_AGAIN (the original report)",
+			msg:  `failed to do request: Head "https://registry-1.docker.io/v2/polinux/stress/manifests/latest": dial tcp: lookup registry-1.docker.io on 10.43.0.10:53: Try again`,
+			want: pullNetwork,
+		},
+		{
+			env:  "CRI-O + Docker Hub, DNS server misbehaving",
+			msg:  `pinging container registry registry-1.docker.io: Get "https://registry-1.docker.io/v2/": dial tcp: lookup registry-1.docker.io on 10.96.0.10:53: server misbehaving`,
+			want: pullNetwork,
+		},
+		{
+			env:  "corporate proxy refusing the connection",
+			msg:  `failed to do request: Head "https://registry-1.docker.io/v2/library/nginx/manifests/latest": proxyconnect tcp: dial tcp 10.0.0.9:3128: connect: connection refused`,
+			want: pullNetwork,
+		},
+		{
+			env:  "on-prem Harbor with a self-signed CA",
+			msg:  `failed to do request: Head "https://harbor.corp.local/v2/team/api/manifests/1.2": x509: certificate signed by unknown authority`,
+			want: pullNetwork,
+		},
+		{
+			env:  "Quay, TLS handshake timeout",
+			msg:  `failed to do request: Head "https://quay.io/v2/": net/http: TLS handshake timeout`,
+			want: pullNetwork,
+		},
+		{
+			env:  "registry served over plain HTTP",
+			msg:  `failed to do request: Head "https://registry.internal:5000/v2/": http: server gave HTTP response to HTTPS client`,
+			want: pullNetwork,
+		},
+		{
+			// Regression: a bare "404" in the list matched the hex digest and
+			// reported a missing tag for what is plainly a network timeout.
+			env:  "digest whose hex contains 404, on a timing-out registry",
+			msg:  `Failed to pull image "acme/app@sha256:c404f1e9d40412ab": failed to do request: Head "https://reg/v2/": dial tcp 10.1.2.3:443: i/o timeout`,
+			want: pullNetwork,
+		},
+
+		// Genuinely missing repository or tag.
+		{
+			env:  "containerd + GHCR, tag never pushed",
+			msg:  `failed to resolve reference "ghcr.io/acme/app:v9": ghcr.io/acme/app:v9: not found`,
+			want: pullMissing,
+		},
+		{
+			env:  "Docker daemon, unknown manifest",
+			msg:  `Error response from daemon: manifest for acme/app:nope not found: manifest unknown`,
+			want: pullMissing,
+		},
+		{
+			env:  "ECR, repository does not exist",
+			msg:  `name unknown: The repository with name 'orders' does not exist in the registry`,
+			want: pullMissing,
+		},
+
+		// Malformed reference: decided by the kubelet's status, not the text.
+		{
+			env:    "any runtime, malformed reference",
+			reason: "InvalidImageName",
+			msg:    `couldn't parse image name "My_Registry/app:v1": invalid reference format`,
+			want:   pullInvalidName,
+		},
+
+		// Boilerplate carries no cause at all and must stay unclassified, so
+		// imagePullMessage keeps looking for something better.
+		{env: "kubelet retry boilerplate", msg: `Error: ImagePullBackOff`, want: pullUnknown},
+		{env: "kubelet retry boilerplate", msg: `Error: ErrImagePull`, want: pullUnknown},
+	}
+
+	names := map[imagePullKind]string{
+		pullUnknown:     "unknown",
+		pullInvalidName: "invalid-name",
+		pullRateLimited: "rate-limited",
+		pullAuth:        "auth",
+		pullNetwork:     "network",
+		pullMissing:     "missing",
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.env, func(t *testing.T) {
+			got := classifyImagePull(tc.reason, tc.msg)
+			if got != tc.want {
+				t.Errorf("classified as %s, want %s\nmessage: %s", names[got], names[tc.want], tc.msg)
+			}
+		})
+	}
+}
+
+// TestImagePullRateLimitAndECR walks the two new environments end to end, so
+// the wording the user actually sees is pinned, not just the classification.
+func TestImagePullRateLimitAndECR(t *testing.T) {
+	t.Run("docker hub rate limit", func(t *testing.T) {
+		d := assertMatches(t, imagePullRule, "imagepull_ratelimit_match")
+		if !strings.Contains(d.Cause, "rate-limiting") {
+			t.Errorf("expected the rate-limit branch, got:\n%s", d.Cause)
+		}
+		// The old behaviour sent the user hunting for a non-existent image.
+		if strings.Contains(d.Suggestion, "Verify the image exists") {
+			t.Errorf("fell through to the default branch:\n%s", d.Suggestion)
+		}
+		if !strings.Contains(d.Suggestion, "imagePullPolicy: IfNotPresent") {
+			t.Errorf("suggestion should cover re-pull avoidance, got:\n%s", d.Suggestion)
+		}
+	})
+
+	t.Run("ecr expired token on cri-o", func(t *testing.T) {
+		d := assertMatches(t, imagePullRule, "imagepull_ecr_auth_match")
+		if !strings.Contains(d.Cause, "unauthenticated or the credentials") {
+			t.Errorf("expected the credentials branch, got:\n%s", d.Cause)
+		}
+		// The pod already has a pull secret; naming it is what makes the
+		// answer actionable rather than generic.
+		if !strings.Contains(d.Cause, "ecr-credentials") {
+			t.Errorf("cause should list the pod's existing imagePullSecrets, got:\n%s", d.Cause)
+		}
+	})
+}
+
+// TestImagePullMessageSelection pins the selection logic itself, independently
+// of how Explain then words the answer.
+func TestImagePullMessageSelection(t *testing.T) {
+	t.Run("prefers a cause over a later generic message", func(t *testing.T) {
+		ctx := loadFixture(t, "imagepull_dns_match")
+		c, ok := imagePullFailure(ctx)
+		if !ok {
+			t.Fatal("expected an image pull failure")
+		}
+		got := imagePullMessage(ctx, c)
+		if !strings.Contains(got, "dial tcp") {
+			t.Errorf("selected message = %q, want the detailed network error", got)
+		}
+	})
+
+	t.Run("falls back to the last event when all are boilerplate", func(t *testing.T) {
+		ctx := loadFixture(t, "imagepull_dns_match")
+		// Strip the informative event, leaving only the kubelet's repeats.
+		var kept []event
+		for _, e := range ctx.Events {
+			if strings.Contains(e.Message, "dial tcp") {
+				continue
+			}
+			kept = append(kept, e)
+		}
+		ctx.Events = kept
+
+		c, _ := imagePullFailure(ctx)
+		got := imagePullMessage(ctx, c)
+		if got == "" {
+			t.Error("expected some message rather than an empty one")
+		}
+		// With nothing better available, reporting the symptom is correct.
+		if !strings.Contains(got, "ImagePullBackOff") && !strings.Contains(got, "ErrImagePull") {
+			t.Errorf("selected message = %q, want one of the remaining events", got)
+		}
+	})
+
+	t.Run("single detailed event is still chosen", func(t *testing.T) {
+		ctx := loadFixture(t, "imagepull_match")
+		c, _ := imagePullFailure(ctx)
+		if got := imagePullMessage(ctx, c); !strings.Contains(got, "not found") {
+			t.Errorf("selected message = %q, want the registry's not-found error", got)
+		}
+	})
+}
+
 func TestPendingResourcesRule(t *testing.T) {
 	d := assertMatches(t, pendingResourcesRule, "pending_resources_match")
 	if !strings.Contains(d.Cause, "cpu and memory") {
@@ -248,6 +495,9 @@ func TestRunAllPriority(t *testing.T) {
 		{"crashloop_probe_match", "crashloop_probe"},
 		{"oomkilled_match", "oomkilled"},
 		{"imagepull_match", "imagepull"},
+		{"imagepull_dns_match", "imagepull"},
+		{"imagepull_ratelimit_match", "imagepull"},
+		{"imagepull_ecr_auth_match", "imagepull"},
 		{"pending_resources_match", "pending_resources"},
 		{"pending_pvc_match", "pending_pvc"},
 		{"configerror_match", "configerror"},

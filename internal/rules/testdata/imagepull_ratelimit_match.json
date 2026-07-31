@@ -1,0 +1,91 @@
+{
+  "_comment": "Docker Hub anonymous pull rate limit on a production EKS node (containerd). This used to fall into the generic default branch and tell the user to check that the image exists — advice that is not just useless here but misleading, since the image is fine.",
+  "pod": {
+    "name": "web-frontend-7b5c9d8f4-jt6qz",
+    "namespace": "production",
+    "phase": "Pending",
+    "nodeName": "ip-10-2-41-183.eu-west-1.compute.internal",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "serviceAccount": "default",
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [nginx]" },
+      { "type": "PodScheduled", "status": "True" }
+    ],
+    "startTime": "2026-07-31T14:12:00Z"
+  },
+  "containers": [
+    {
+      "name": "nginx",
+      "image": "nginx:1.27-alpine",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": {
+        "type": "Waiting",
+        "reason": "ImagePullBackOff",
+        "message": "Back-off pulling image \"nginx:1.27-alpine\""
+      },
+      "resources": {
+        "requestsCpu": "100m",
+        "requestsMemory": "128Mi",
+        "requestsCpuMillis": 100,
+        "requestsMemoryBytes": 134217728
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulling",
+      "message": "Pulling image \"nginx:1.27-alpine\"",
+      "source": "kubelet",
+      "count": 4,
+      "involvedKind": "Pod",
+      "involvedName": "web-frontend-7b5c9d8f4-jt6qz",
+      "firstTimestamp": "2026-07-31T14:12:03Z",
+      "lastTimestamp": "2026-07-31T14:15:44Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Failed to pull image \"nginx:1.27-alpine\": rpc error: code = Unknown desc = failed to pull and unpack image \"docker.io/library/nginx:1.27-alpine\": failed to copy: httpReadSeeker: failed open: unexpected status code 429 Too Many Requests - Server message: toomanyrequests: You have reached your pull rate limit. You may increase the limit by authenticating and upgrading: https://www.docker.com/increase-rate-limit",
+      "source": "kubelet",
+      "count": 4,
+      "involvedKind": "Pod",
+      "involvedName": "web-frontend-7b5c9d8f4-jt6qz",
+      "firstTimestamp": "2026-07-31T14:12:09Z",
+      "lastTimestamp": "2026-07-31T14:15:50Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Error: ErrImagePull",
+      "source": "kubelet",
+      "count": 4,
+      "involvedKind": "Pod",
+      "involvedName": "web-frontend-7b5c9d8f4-jt6qz",
+      "firstTimestamp": "2026-07-31T14:12:09Z",
+      "lastTimestamp": "2026-07-31T14:15:50Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Error: ImagePullBackOff",
+      "source": "kubelet",
+      "count": 11,
+      "involvedKind": "Pod",
+      "involvedName": "web-frontend-7b5c9d8f4-jt6qz",
+      "firstTimestamp": "2026-07-31T14:12:25Z",
+      "lastTimestamp": "2026-07-31T14:17:02Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-2-41-183.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T14:17:20Z"
+}

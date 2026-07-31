@@ -1,0 +1,92 @@
+{
+  "_comment": "EKS node running CRI-O, pulling from ECR with an expired registry token. Different runtime AND different registry from every other fixture: CRI-O phrases the error as 'initializing source docker://...' and ECR says 'Your authorization token has expired', so none of the containerd/Docker Hub wording applies. This used to fall into the generic default branch.",
+  "pod": {
+    "name": "orders-api-5d7f9c6b8-w4nkx",
+    "namespace": "orders",
+    "phase": "Pending",
+    "nodeName": "ip-10-4-12-77.eu-west-1.compute.internal",
+    "qosClass": "Burstable",
+    "restartPolicy": "Always",
+    "serviceAccount": "orders-api",
+    "imagePullSecrets": ["ecr-credentials"],
+    "conditions": [
+      { "type": "Initialized", "status": "True" },
+      { "type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [api]" },
+      { "type": "PodScheduled", "status": "True" }
+    ],
+    "startTime": "2026-07-31T13:40:00Z"
+  },
+  "containers": [
+    {
+      "name": "api",
+      "image": "418913066123.dkr.ecr.eu-west-1.amazonaws.com/orders-api:2026.07.31-a3f9c1d",
+      "ready": false,
+      "started": false,
+      "restartCount": 0,
+      "state": {
+        "type": "Waiting",
+        "reason": "ImagePullBackOff",
+        "message": "Back-off pulling image \"418913066123.dkr.ecr.eu-west-1.amazonaws.com/orders-api:2026.07.31-a3f9c1d\""
+      },
+      "resources": {
+        "requestsCpu": "500m",
+        "requestsMemory": "512Mi",
+        "requestsCpuMillis": 500,
+        "requestsMemoryBytes": 536870912
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "Normal",
+      "reason": "Pulling",
+      "message": "Pulling image \"418913066123.dkr.ecr.eu-west-1.amazonaws.com/orders-api:2026.07.31-a3f9c1d\"",
+      "source": "kubelet",
+      "count": 3,
+      "involvedKind": "Pod",
+      "involvedName": "orders-api-5d7f9c6b8-w4nkx",
+      "firstTimestamp": "2026-07-31T13:40:04Z",
+      "lastTimestamp": "2026-07-31T13:42:31Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Failed to pull image \"418913066123.dkr.ecr.eu-west-1.amazonaws.com/orders-api:2026.07.31-a3f9c1d\": rpc error: code = Unknown desc = initializing source docker://418913066123.dkr.ecr.eu-west-1.amazonaws.com/orders-api:2026.07.31-a3f9c1d: reading manifest 2026.07.31-a3f9c1d in 418913066123.dkr.ecr.eu-west-1.amazonaws.com/orders-api: denied: Your authorization token has expired. Reauthenticate and try again.",
+      "source": "kubelet",
+      "count": 3,
+      "involvedKind": "Pod",
+      "involvedName": "orders-api-5d7f9c6b8-w4nkx",
+      "firstTimestamp": "2026-07-31T13:40:07Z",
+      "lastTimestamp": "2026-07-31T13:42:34Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Error: ErrImagePull",
+      "source": "kubelet",
+      "count": 3,
+      "involvedKind": "Pod",
+      "involvedName": "orders-api-5d7f9c6b8-w4nkx",
+      "firstTimestamp": "2026-07-31T13:40:07Z",
+      "lastTimestamp": "2026-07-31T13:42:34Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "Failed",
+      "message": "Error: ImagePullBackOff",
+      "source": "kubelet",
+      "count": 9,
+      "involvedKind": "Pod",
+      "involvedName": "orders-api-5d7f9c6b8-w4nkx",
+      "firstTimestamp": "2026-07-31T13:40:22Z",
+      "lastTimestamp": "2026-07-31T13:44:10Z"
+    }
+  ],
+  "node": {
+    "name": "ip-10-4-12-77.eu-west-1.compute.internal",
+    "architecture": "amd64",
+    "os": "linux",
+    "conditions": [{ "type": "Ready", "status": "True" }]
+  },
+  "collectedAt": "2026-07-31T13:44:30Z"
+}
