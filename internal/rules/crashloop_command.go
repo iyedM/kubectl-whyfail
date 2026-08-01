@@ -69,12 +69,12 @@ var crashLoopCommandRule = Rule{
 
 		cause := fmt.Sprintf(
 			"Container %q is in CrashLoopBackOff because its command never runs. %s\n%s%s"+
-				"The container exits immediately (%d restarts), so there are no application logs to read — the app never started.",
-			c.Name, why, cmdLine, detail, c.RestartCount)
+				"The container exits immediately (%s), so there are no application logs to read — the app never started.",
+			c.Name, why, cmdLine, detail, countEN(c.RestartCount, "restart", "restarts"))
 		causeFR := fmt.Sprintf(
 			"Le conteneur %q est en CrashLoopBackOff parce que sa commande ne s'exécute jamais. %s\n%s%s"+
-				"Le conteneur sort immédiatement (%d redémarrages), il n'y a donc aucun log applicatif à lire — l'application n'a jamais démarré.",
-			c.Name, whyFR, cmdLineFR, detail, c.RestartCount)
+				"Le conteneur sort immédiatement (%s), il n'y a donc aucun log applicatif à lire — l'application n'a jamais démarré.",
+			c.Name, whyFR, cmdLineFR, detail, countFR(c.RestartCount, "redémarrage", "redémarrages"))
 
 		suggestion := fmt.Sprintf(
 			"Check what the image actually ships before guessing:\n"+

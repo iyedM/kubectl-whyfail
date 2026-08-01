@@ -23,11 +23,18 @@ var oomKilledRule = Rule{
 			limit = ctx.L("no memory limit set", "aucune limite mémoire définie")
 		}
 
+		// The sentence claims the kill is recurring, so it must only appear
+		// when a restart has actually happened. A container can sit in
+		// CrashLoopBackOff with RestartCount still at 0, and "restarted 0
+		// times, so it is being OOM-killed repeatedly" contradicts itself.
 		var loop string
 		var loopFR string
-		if isCrashLooping(c) {
-			loop = fmt.Sprintf(" It has restarted %d times, so it is being OOM-killed repeatedly, not once.", c.RestartCount)
-			loopFR = fmt.Sprintf(" Il a redémarré %d fois : il est donc tué par l'OOM de façon répétée, pas une seule fois.", c.RestartCount)
+		if isCrashLooping(c) && c.RestartCount > 0 {
+			loop = fmt.Sprintf(" It has restarted %s, so it is being OOM-killed repeatedly, not once.",
+				countEN(c.RestartCount, "time", "times"))
+			// "fois" is invariable, so French needs no agreement here.
+			loopFR = fmt.Sprintf(" Il a redémarré %d fois : il est donc tué par l'OOM de façon répétée, pas une seule fois.",
+				c.RestartCount)
 		}
 
 		cause := fmt.Sprintf(

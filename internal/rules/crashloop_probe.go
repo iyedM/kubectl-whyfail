@@ -37,16 +37,16 @@ var crashLoopProbeRule = Rule{
 
 		cause := fmt.Sprintf(
 			"Container %q is in CrashLoopBackOff because its liveness probe (%s) keeps failing: "+
-				"the kubelet kills the container, restarts it, and the probe fails again (%d restarts so far). "+
+				"the kubelet kills the container, restarts it, and the probe fails again (%s so far). "+
 				"The probe is configured with %s. The application is most likely still starting up when the "+
 				"first probe fires, rather than being genuinely dead.",
-			c.Name, target, c.RestartCount, timing)
+			c.Name, target, countEN(c.RestartCount, "restart", "restarts"), timing)
 		causeFR := fmt.Sprintf(
 			"Le conteneur %q est en CrashLoopBackOff parce que sa liveness probe (%s) échoue en boucle : "+
-				"le kubelet tue le conteneur, le redémarre, et la probe échoue à nouveau (%d redémarrages). "+
+				"le kubelet tue le conteneur, le redémarre, et la probe échoue à nouveau (%s). "+
 				"La probe est configurée avec %s. L'application est très probablement encore en train de "+
 				"démarrer quand la première probe se déclenche, plutôt que réellement morte.",
-			c.Name, target, c.RestartCount, timing)
+			c.Name, target, countFR(c.RestartCount, "redémarrage", "redémarrages"), timing)
 		if detail != "" {
 			cause += "\nLast probe error: " + detail
 			causeFR += "\nDernière erreur de probe : " + detail

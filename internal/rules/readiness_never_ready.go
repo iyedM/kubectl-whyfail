@@ -58,14 +58,14 @@ var readinessNeverReadyRule = Rule{
 			"Container %q is running fine but never becomes ready: its readiness probe (%s) has never succeeded, "+
 				"so Kubernetes keeps the pod out of every Service that selects it — the pod receives no traffic and a "+
 				"rolling update using it will stall.%s%s%s\n"+
-				"The process itself has not crashed (%d restarts), so this is a probe configuration problem far more often than an application problem.",
-			c.Name, target, age, portNote, evidence, c.RestartCount)
+				"The process itself has not crashed (%s), so this is a probe configuration problem far more often than an application problem.",
+			c.Name, target, age, portNote, evidence, countEN(c.RestartCount, "restart", "restarts"))
 		causeFR := fmt.Sprintf(
 			"Le conteneur %q tourne correctement mais ne devient jamais ready : sa readiness probe (%s) n'a jamais réussi, "+
 				"donc Kubernetes le maintient hors de tous les Services qui le sélectionnent — le pod ne reçoit aucun trafic et "+
 				"un rolling update basé dessus restera bloqué.%s%s%s\n"+
-				"Le processus n'a pas planté (%d redémarrages) : c'est bien plus souvent un problème de configuration de probe qu'un problème applicatif.",
-			c.Name, target, ageFR, portNoteFR, evidenceFR, c.RestartCount)
+				"Le processus n'a pas planté (%s) : c'est bien plus souvent un problème de configuration de probe qu'un problème applicatif.",
+			c.Name, target, ageFR, portNoteFR, evidenceFR, countFR(c.RestartCount, "redémarrage", "redémarrages"))
 
 		suggestion := fmt.Sprintf(
 			"Ask the container itself whether the endpoint answers:\n"+

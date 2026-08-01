@@ -249,6 +249,29 @@ func declaresPort(c container, port string) bool {
 	return false
 }
 
+// countEN renders a count with its noun in English: "1 time", "2 times",
+// "0 times". English uses the singular for exactly one and the plural for
+// everything else, zero included.
+func countEN(n int32, singular, plural string) string {
+	if n == 1 {
+		return fmt.Sprintf("%d %s", n, singular)
+	}
+	return fmt.Sprintf("%d %s", n, plural)
+}
+
+// countFR renders a count with its noun in French: "1 redémarrage",
+// "2 redémarrages", "0 redémarrage".
+//
+// The rule differs from English: French keeps the singular for zero as well as
+// for one, so the two languages cannot share one helper. Invariable nouns such
+// as "fois" need neither.
+func countFR(n int32, singular, plural string) string {
+	if n < 2 {
+		return fmt.Sprintf("%d %s", n, singular)
+	}
+	return fmt.Sprintf("%d %s", n, plural)
+}
+
 // humanBytes renders a byte count with the binary unit a Kubernetes user
 // expects (128Mi rather than 134 MB).
 func humanBytes(n int64) string {

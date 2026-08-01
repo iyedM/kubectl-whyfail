@@ -2,6 +2,7 @@ package rules
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -115,6 +116,213 @@ func TestOOMKilledRule(t *testing.T) {
 
 	assertDoesNotMatch(t, oomKilledRule, "oomkilled_nomatch")
 	assertDoesNotMatch(t, oomKilledRule, "healthy")
+}
+
+// TestOOMKilledRestartPluralisation pins the restart sentence, which is built
+// from a counter and therefore reads wrong at exactly the boundary values a
+// fixture with 5 restarts never exercises.
+func TestOOMKilledRestartPluralisation(t *testing.T) {
+	// oomCtx builds a crash-looping, OOM-killed container with n restarts.
+	oomCtx := func(n int32, lang string) *DiagnosticContext {
+		ctx := loadFixture(t, "oomkilled_match")
+		ctx.Lang = lang
+		ctx.Containers[0].RestartCount = n
+		return ctx
+	}
+
+	t.Run("one restart is singular", func(t *testing.T) {
+		d := oomKilledRule.Explain(oomCtx(1, "en"))
+		if !strings.Contains(d.Cause, "restarted 1 time,") {
+			t.Errorf("expected \"restarted 1 time\", got:\n%s", d.Cause)
+		}
+		if strings.Contains(d.Cause, "1 times") {
+			t.Errorf("\"1 times\" is not English:\n%s", d.Cause)
+		}
+	})
+
+	t.Run("two restarts are plural", func(t *testing.T) {
+		d := oomKilledRule.Explain(oomCtx(2, "en"))
+		if !strings.Contains(d.Cause, "restarted 2 times") {
+			t.Errorf("expected \"restarted 2 times\", got:\n%s", d.Cause)
+		}
+	})
+
+	t.Run("zero restarts omits the sentence entirely", func(t *testing.T) {
+		d := oomKilledRule.Explain(oomCtx(0, "en"))
+		if strings.Contains(d.Cause, "restarted") {
+			t.Errorf("the recurrence sentence must not appear with 0 restarts:\n%s", d.Cause)
+		}
+		// "0 times ... repeatedly, not once" would contradict itself.
+		if strings.Contains(d.Cause, "repeatedly") {
+			t.Errorf("must not claim a repeated kill with 0 restarts:\n%s", d.Cause)
+		}
+		// The rest of the diagnosis must still be intact.
+		if !strings.Contains(d.Cause, "OOMKilled") || !strings.Contains(d.Cause, "128Mi") {
+			t.Errorf("dropping the sentence damaged the diagnosis:\n%s", d.Cause)
+		}
+	})
+
+	t.Run("french fois is invariable", func(t *testing.T) {
+		for _, n := range []int32{1, 2} {
+			d := oomKilledRule.Explain(oomCtx(n, "fr"))
+			want := fmt.Sprintf("redémarré %d fois", n)
+			if !strings.Contains(d.Cause, want) {
+				t.Errorf("expected %q, got:\n%s", want, d.Cause)
+			}
+		}
+		if d := oomKilledRule.Explain(oomCtx(0, "fr")); strings.Contains(d.Cause, "redémarré") {
+			t.Errorf("the French sentence must be dropped too with 0 restarts:\n%s", d.Cause)
+		}
+	})
+}
+
+// assertRestartAgreement renders a rule at a given restart count and checks
+// that both languages agree correctly. The expected fragments include their
+// closing parenthesis on purpose: without it, "1 restart" would also match the
+// broken "1 restarts" and the test would pass on the bug it exists to catch.
+func assertRestartAgreement(t *testing.T, r Rule, fixture string, n int32, wantEN, wantFR string) {
+	t.Helper()
+
+	for _, tc := range []struct{ lang, want string }{{"en", wantEN}, {"fr", wantFR}} {
+		ctx := loadFixture(t, fixture)
+		ctx.Lang = tc.lang
+		ctx.Containers[0].RestartCount = n
+
+		d := r.Explain(ctx)
+		if !strings.Contains(d.Cause, tc.want) {
+			t.Errorf("%s at %d restarts (lang=%s): expected %q in:\n%s", r.Name, n, tc.lang, tc.want, d.Cause)
+		}
+	}
+}
+
+// TestCrashLoopProbeRestartPluralisation covers rule 1.
+//
+// Zero is not tested against the text because the rule cannot fire there:
+// probeKilledContainer requires at least one restart, since a probe that has
+// killed nothing yet is not the cause of anything. That guarantee is asserted
+// instead.
+func TestCrashLoopProbeRestartPluralisation(t *testing.T) {
+	assertRestartAgreement(t, crashLoopProbeRule, "crashloop_probe_match", 1,
+		"(1 restart so far)", "(1 redémarrage)")
+	assertRestartAgreement(t, crashLoopProbeRule, "crashloop_probe_match", 2,
+		"(2 restarts so far)", "(2 redémarrages)")
+
+	t.Run("zero restarts is unreachable by design", func(t *testing.T) {
+		ctx := loadFixture(t, "crashloop_probe_match")
+		ctx.Containers[0].RestartCount = 0
+		if crashLoopProbeRule.Match(ctx) {
+			t.Error("a liveness probe that has restarted nothing must not be blamed")
+		}
+	})
+}
+
+// TestCrashLoopCommandRestartPluralisation covers rule 8. Zero is reachable
+// here: an entrypoint that cannot be exec'd fails on the very first attempt,
+// before any restart is recorded.
+func TestCrashLoopCommandRestartPluralisation(t *testing.T) {
+	for _, tc := range []struct {
+		n              int32
+		wantEN, wantFR string
+	}{
+		{0, "(0 restarts)", "(0 redémarrage)"},
+		{1, "(1 restart)", "(1 redémarrage)"},
+		{2, "(2 restarts)", "(2 redémarrages)"},
+	} {
+		assertRestartAgreement(t, crashLoopCommandRule, "crashloop_command_match", tc.n, tc.wantEN, tc.wantFR)
+	}
+
+	t.Run("the rule still fires at zero restarts", func(t *testing.T) {
+		ctx := loadFixture(t, "crashloop_command_match")
+		ctx.Containers[0].RestartCount = 0
+		if !crashLoopCommandRule.Match(ctx) {
+			t.Error("exit code 127 is conclusive on its own, restarts or not")
+		}
+	})
+}
+
+// TestReadinessRestartPluralisation covers rule 9, where the agreement matters
+// most: the rule only fires below three restarts, so 0 and 1 — the two values
+// the old code got wrong — are the everyday case, not an edge case.
+func TestReadinessRestartPluralisation(t *testing.T) {
+	for _, tc := range []struct {
+		n              int32
+		wantEN, wantFR string
+	}{
+		{0, "(0 restarts)", "(0 redémarrage)"},
+		{1, "(1 restart)", "(1 redémarrage)"},
+		{2, "(2 restarts)", "(2 redémarrages)"},
+	} {
+		assertRestartAgreement(t, readinessNeverReadyRule, "readiness_never_ready_match", tc.n, tc.wantEN, tc.wantFR)
+
+		// Every one of these counts is reachable: the rule bails out only
+		// above two restarts.
+		ctx := loadFixture(t, "readiness_never_ready_match")
+		ctx.Containers[0].RestartCount = tc.n
+		if !readinessNeverReadyRule.Match(ctx) {
+			t.Errorf("rule should still match at %d restarts", tc.n)
+		}
+	}
+}
+
+// TestNoBrokenPluralAnywhere is the backstop: it renders every rule against
+// every match fixture at the counts that trip agreement, and fails on any
+// "<n> restarts"/"<n> redémarrages" that should have been singular.
+func TestNoBrokenPluralAnywhere(t *testing.T) {
+	fixtures := []string{
+		"crashloop_probe_match", "oomkilled_match", "imagepull_match",
+		"pending_resources_match", "pending_pvc_match", "configerror_match",
+		"evicted_match", "crashloop_command_match", "readiness_never_ready_match",
+		"imagepull_arch_match", "imagepull_dns_match", "imagepull_ratelimit_match",
+		"imagepull_ecr_auth_match",
+	}
+	// Wrong at one, and — in French only — wrong at zero as well.
+	banned := []string{"1 restarts", "1 redémarrages", "1 times", "0 redémarrages"}
+
+	for _, fixture := range fixtures {
+		for _, n := range []int32{0, 1, 2} {
+			for _, lang := range []string{"en", "fr"} {
+				ctx := loadFixture(t, fixture)
+				ctx.Lang = lang
+				for i := range ctx.Containers {
+					ctx.Containers[i].RestartCount = n
+				}
+
+				for _, r := range All() {
+					if !r.Match(ctx) {
+						continue
+					}
+					d := r.Explain(ctx)
+					for _, bad := range banned {
+						if strings.Contains(d.Cause, bad) || strings.Contains(d.Suggestion, bad) {
+							t.Errorf("rule %s on %s (n=%d, lang=%s) produced %q", r.Name, fixture, n, lang, bad)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// TestCountHelpers pins the two agreement rules, which differ at zero.
+func TestCountHelpers(t *testing.T) {
+	cases := []struct {
+		n      int32
+		wantEN string
+		wantFR string
+	}{
+		{0, "0 restarts", "0 redémarrage"},
+		{1, "1 restart", "1 redémarrage"},
+		{2, "2 restarts", "2 redémarrages"},
+		{17, "17 restarts", "17 redémarrages"},
+	}
+	for _, tc := range cases {
+		if got := countEN(tc.n, "restart", "restarts"); got != tc.wantEN {
+			t.Errorf("countEN(%d) = %q, want %q", tc.n, got, tc.wantEN)
+		}
+		if got := countFR(tc.n, "redémarrage", "redémarrages"); got != tc.wantFR {
+			t.Errorf("countFR(%d) = %q, want %q", tc.n, got, tc.wantFR)
+		}
+	}
 }
 
 func TestImagePullRule(t *testing.T) {
