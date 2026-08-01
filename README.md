@@ -11,10 +11,6 @@ kubectl whyfail pod my-app-7d9f8b6c-x2kpl -n production
 
 ![demo](docs/demo.gif)
 
-> **📌 Replace this GIF.** Record a real terminal session (e.g. with
-> [vhs](https://github.com/charmbracelet/vhs) or [asciinema](https://asciinema.org))
-> and drop it at `docs/demo.gif`.
-
 ---
 
 ## The problem

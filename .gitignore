@@ -33,3 +33,6 @@ vendor/
 .env
 .env.*
 !.env.example
+
+# Fichiers de travail internes (prompts, contexte pour outils IA)
+.dev/
