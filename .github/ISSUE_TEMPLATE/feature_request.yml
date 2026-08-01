@@ -1,0 +1,60 @@
+name: New rule / feature request
+description: Propose a new failure mode to detect, or another improvement.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The v1 rule set is intentionally closed at 10 rules to keep every one of them 100%
+        reliable. If you're proposing a new rule, this issue is where we discuss the scope
+        **before** any code gets written — please don't open a PR for a new rule without this
+        discussion first.
+
+  - type: textarea
+    id: failure-mode
+    attributes:
+      label: What failure mode are you proposing?
+      description: >
+        Describe the pod failure in plain language — what does the user see
+        (`kubectl get pod`), and what's actually going on underneath?
+    validations:
+      required: true
+
+  - type: input
+    id: signal
+    attributes:
+      label: What Kubernetes signal identifies it?
+      description: >
+        The Reason/exit code/event that makes this failure mode detectable — e.g. a specific
+        waiting reason, a termination exit code, or an event message pattern.
+      placeholder: "e.g. container waiting with reason X, or event reason Y containing Z"
+    validations:
+      required: true
+
+  - type: textarea
+    id: not-covered
+    attributes:
+      label: Why isn't this already covered?
+      description: >
+        Check the 10 existing rules in the README's "What it detects" table first. Explain
+        why this is genuinely a distinct failure mode, not a variant of an existing one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: near-miss
+    attributes:
+      label: What would a near-miss look like?
+      description: >
+        A realistic pod state that looks similar but has a different root cause — this is
+        what a nomatch fixture needs to guard against false positives.
+    validations:
+      required: false
+
+  - type: textarea
+    id: other
+    attributes:
+      label: Anything else (non-rule feature requests go here)
+      description: If this isn't a new rule, describe the improvement you have in mind.
+    validations:
+      required: false

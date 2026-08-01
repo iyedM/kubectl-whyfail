@@ -1,0 +1,76 @@
+name: Bug report
+description: Something is broken — a rule matched wrong, crashed, or gave a misleading answer.
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: whyfail version
+      description: Output of `kubectl whyfail --version`
+      placeholder: "kubectl-whyfail dev"
+    validations:
+      required: true
+
+  - type: input
+    id: command
+    attributes:
+      label: Exact command you ran
+      placeholder: "kubectl whyfail pod my-app-7d9f8b6c-x2kpl -n production"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What should whyfail have said or done?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: Paste the full output of whyfail here, including the badge and confidence line.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Pod context (optional but very helpful)
+      description: >
+        If you can share it, `kubectl get pod <name> -o yaml` or `kubectl describe pod <name>`
+        for the pod in question makes this much easier to reproduce. Strip anything sensitive
+        first (image names, internal hostnames, etc. are usually fine to keep).
+      render: yaml
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Container runtime (if known)
+      options:
+        - "Not sure"
+        - containerd
+        - CRI-O
+        - Docker
+        - Other
+    validations:
+      required: false
+
+  - type: dropdown
+    id: registry
+    attributes:
+      label: Registry involved (if the bug relates to image pulls)
+      options:
+        - "Not applicable"
+        - Docker Hub
+        - Amazon ECR
+        - Google Artifact Registry / GCR
+        - Azure Container Registry
+        - Quay
+        - Harbor (self-hosted)
+        - Other private registry
+    validations:
+      required: false
