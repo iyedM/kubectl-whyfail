@@ -1,8 +1,7 @@
-# kubectl-whyfai
+# kubectl-whyfail
 
 [![CI](https://github.com/iyedM/kubectl-whyfail/actions/workflows/ci.yml/badge.svg)](https://github.com/iyedM/kubectl-whyfail/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/iyedM/kubectl-whyfail)](https://github.com/iyedM/kubectl-whyfail/releases/latest)
-[![Go Report Card](https://goreportcard.com/badge/github.com/iyedM/kubectl-whyfail)](https://goreportcard.com/report/github.com/iyedM/kubectl-whyfail)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **Stop reading YAML at 3am. Ask your cluster why the pod is broken.**
