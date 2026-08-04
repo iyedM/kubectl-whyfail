@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iyedM/kubectl-whyfail/internal/collector"
+	"github.com/iyedM/kubectl-why-fail/internal/collector"
 )
 
 // Type aliases so rule files read without the collector prefix everywhere.

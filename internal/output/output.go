@@ -13,8 +13,8 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/iyedM/kubectl-whyfail/internal/collector"
-	"github.com/iyedM/kubectl-whyfail/internal/rules"
+	"github.com/iyedM/kubectl-why-fail/internal/collector"
+	"github.com/iyedM/kubectl-why-fail/internal/rules"
 )
 
 // Source says where a diagnosis came from.
@@ -233,7 +233,7 @@ func (p *Printer) PrintNoDiagnosis(dc *collector.DiagnosticContext, llmErr error
 	dim.Fprintln(w, p.tr(
 		"  If this is a failure mode whyfail should recognise, please open an issue:",
 		"  Si whyfail devrait reconnaître ce cas, ouvrez une issue :"))
-	dim.Fprintln(w, "    https://github.com/iyedM/kubectl-whyfail/issues/new")
+	dim.Fprintln(w, "    https://github.com/iyedM/kubectl-why-fail/issues/new")
 	fmt.Fprintln(w)
 }
 

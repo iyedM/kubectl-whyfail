@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/iyedM/kubectl-whyfail/internal/collector"
-	"github.com/iyedM/kubectl-whyfail/internal/rules"
+	"github.com/iyedM/kubectl-why-fail/internal/collector"
+	"github.com/iyedM/kubectl-why-fail/internal/rules"
 )
 
 func init() {

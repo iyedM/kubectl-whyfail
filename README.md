@@ -1,12 +1,12 @@
-# kubectl-whyfail
+# kubectl-why-fail
 
-[![CI](https://github.com/iyedM/kubectl-whyfail/actions/workflows/ci.yml/badge.svg)](https://github.com/iyedM/kubectl-whyfail/actions/workflows/ci.yml)
-[![Latest release](https://img.shields.io/github/v/release/iyedM/kubectl-whyfail)](https://github.com/iyedM/kubectl-whyfail/releases/latest)
+[![CI](https://github.com/iyedM/kubectl-why-fail/actions/workflows/ci.yml/badge.svg)](https://github.com/iyedM/kubectl-why-fail/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/iyedM/kubectl-why-fail)](https://github.com/iyedM/kubectl-why-fail/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **Stop reading YAML at 3am. Ask your cluster why the pod is broken.**
 
-`kubectl-whyfail` is a `kubectl` plugin that diagnoses a failing pod and explains the cause
+`kubectl-why-fail` is a `kubectl` plugin that diagnoses a failing pod and explains the cause
 in plain language — not raw JSON.
 
 ```bash
@@ -65,14 +65,14 @@ $ kubectl whyfail pod my-app-7d9f8b6c-x2kpl -n production
 ## Installation
 
 ```bash
-go install github.com/iyedM/kubectl-whyfail/cmd/whyfail@latest
+go install github.com/iyedM/kubectl-why-fail/cmd/why-fail@latest
 ```
 
 `kubectl` discovers plugins by looking for executables named `kubectl-<name>` on your `PATH`,
 so rename the installed binary once:
 
 ```bash
-mv "$(go env GOPATH)/bin/whyfail" "$(go env GOPATH)/bin/kubectl-whyfail"
+mv "$(go env GOPATH)/bin/whyfail" "$(go env GOPATH)/bin/kubectl-why-fail"
 ```
 
 Check it worked:
@@ -84,11 +84,11 @@ kubectl whyfail --version
 
 **Or download a prebuilt binary**
 
-Grab the archive for your platform from the [latest release](https://github.com/iyedM/kubectl-whyfail/releases/latest), then:
+Grab the archive for your platform from the [latest release](https://github.com/iyedM/kubectl-why-fail/releases/latest), then:
 
 ```bash
-tar -xzf kubectl-whyfail_linux_amd64.tar.gz
-sudo mv kubectl-whyfail_linux_amd64 /usr/local/bin/kubectl-whyfail
+tar -xzf kubectl-why-fail_linux_amd64.tar.gz
+sudo mv kubectl-why-fail_linux_amd64 /usr/local/bin/kubectl-why-fail
 ```
 
 (Windows: unzip the `.zip` and place the `.exe` anywhere on your `PATH`.)
@@ -97,10 +97,10 @@ sudo mv kubectl-whyfail_linux_amd64 /usr/local/bin/kubectl-whyfail
 <summary>Build from source</summary>
 
 ```bash
-git clone https://github.com/iyedM/kubectl-whyfail
-cd kubectl-whyfail
-go build -o kubectl-whyfail ./cmd/whyfail
-sudo mv kubectl-whyfail /usr/local/bin/
+git clone https://github.com/iyedM/kubectl-why-fail
+cd kubectl-why-fail
+go build -o kubectl-why-fail ./cmd/why-fail
+sudo mv kubectl-why-fail /usr/local/bin/
 ```
 
 </details>
@@ -251,7 +251,7 @@ Two rules that the suite enforces automatically, and which are the whole point o
 - **No rule may match `testdata/healthy.json`.** A confident wrong answer is worse than no
   answer.
 - **The LLM is never called when a rule matched.** Guarded by an integration test in
-  [`cmd/whyfail/main_test.go`](cmd/whyfail/main_test.go).
+  [`cmd/why-fail/main_test.go`](cmd/why-fail/main_test.go).
 
 > The v1 scope is intentionally closed at ten rules to keep them 100% reliable. If you want to
 > add an eleventh, please open an issue first so we can discuss it — that is a scope decision,
@@ -281,7 +281,7 @@ A strict three-stage pipeline, one direction only:
 | [`internal/rules`](internal/rules) | The ten deterministic rules. No network, no clock, fully testable from JSON fixtures. |
 | [`internal/llmfallback`](internal/llmfallback) | Minimal OpenRouter client. Only reachable when no rule matched. |
 | [`internal/output`](internal/output) | Terminal rendering, with distinct badges for rule vs AI answers. |
-| [`cmd/whyfail`](cmd/whyfail) | Argument parsing, kubeconfig, and pipeline orchestration. |
+| [`cmd/why-fail`](cmd/why-fail) | Argument parsing, kubeconfig, and pipeline orchestration. |
 
 Because `DiagnosticContext` is plain JSON with no Kubernetes types in it, every rule can be
 tested against a realistic fixture without a cluster.
@@ -291,7 +291,7 @@ tested against a realistic fixture without a cluster.
 ## Development
 
 ```bash
-go build -o whyfail ./cmd/whyfail
+go build -o whyfail ./cmd/why-fail
 go test ./...
 gofmt -l .
 ```

@@ -1,4 +1,4 @@
-module github.com/iyedM/kubectl-whyfail
+module github.com/iyedM/kubectl-why-fail
 
 go 1.26.0
 

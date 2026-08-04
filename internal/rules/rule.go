@@ -5,7 +5,7 @@
 // every rule fully testable from a JSON fixture in testdata/.
 package rules
 
-import "github.com/iyedM/kubectl-whyfail/internal/collector"
+import "github.com/iyedM/kubectl-why-fail/internal/collector"
 
 // DiagnosticContext is the snapshot produced by the collector. It is aliased
 // here so rules read naturally and so collector.Collect's result can be handed

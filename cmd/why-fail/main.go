@@ -19,16 +19,16 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/iyedM/kubectl-whyfail/internal/collector"
-	"github.com/iyedM/kubectl-whyfail/internal/llmfallback"
-	"github.com/iyedM/kubectl-whyfail/internal/output"
-	"github.com/iyedM/kubectl-whyfail/internal/rules"
+	"github.com/iyedM/kubectl-why-fail/internal/collector"
+	"github.com/iyedM/kubectl-why-fail/internal/llmfallback"
+	"github.com/iyedM/kubectl-why-fail/internal/output"
+	"github.com/iyedM/kubectl-why-fail/internal/rules"
 )
 
 // version is overridden at build time with -ldflags "-X main.version=...".
 var version = "dev"
 
-const usage = `kubectl-whyfail — explain why a Kubernetes pod is failing, in plain language.
+const usage = `kubectl-why-fail — explain why a Kubernetes pod is failing, in plain language.
 
 Usage:
   kubectl whyfail pod <name> [-n namespace] [flags]
@@ -285,7 +285,7 @@ func parseArgs(args []string) (*options, error) {
 	}
 
 	if opts.showVer {
-		fmt.Printf("kubectl-whyfail %s\n", version)
+		fmt.Printf("kubectl-why-fail %s\n", version)
 		return nil, nil
 	}
 

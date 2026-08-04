@@ -1,4 +1,4 @@
-# Contributing to kubectl-whyfail
+# Contributing to kubectl-why-fail
 
 Thanks for considering a contribution. This project stays small and reliable on purpose —
 here's what that means in practice.

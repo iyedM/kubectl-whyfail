@@ -7,7 +7,7 @@ body:
     attributes:
       label: whyfail version
       description: Output of `kubectl whyfail --version`
-      placeholder: "kubectl-whyfail dev"
+      placeholder: "kubectl-why-fail dev"
     validations:
       required: true
 

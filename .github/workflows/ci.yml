@@ -80,4 +80,4 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: "0"
-        run: go build -o /dev/null ./cmd/whyfail
+        run: go build -o /dev/null ./cmd/why-fail

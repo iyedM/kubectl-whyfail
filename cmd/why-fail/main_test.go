@@ -14,9 +14,9 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/iyedM/kubectl-whyfail/internal/collector"
-	"github.com/iyedM/kubectl-whyfail/internal/output"
-	"github.com/iyedM/kubectl-whyfail/internal/rules"
+	"github.com/iyedM/kubectl-why-fail/internal/collector"
+	"github.com/iyedM/kubectl-why-fail/internal/output"
+	"github.com/iyedM/kubectl-why-fail/internal/rules"
 )
 
 // spyLLM records whether the fallback was consulted. Any call is a contract

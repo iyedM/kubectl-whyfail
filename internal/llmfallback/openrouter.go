@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/iyedM/kubectl-whyfail/internal/collector"
-	"github.com/iyedM/kubectl-whyfail/internal/rules"
+	"github.com/iyedM/kubectl-why-fail/internal/collector"
+	"github.com/iyedM/kubectl-why-fail/internal/rules"
 )
 
 // DefaultEndpoint is the OpenAI-compatible chat completions endpoint.
@@ -45,8 +45,8 @@ var ModelCandidates = []string{
 // Referer and Title identify the plugin to OpenRouter's dashboard. Both are
 // optional headers in the API; they carry no user data.
 const (
-	Referer = "https://github.com/iyedM/kubectl-whyfail"
-	Title   = "kubectl-whyfail"
+	Referer = "https://github.com/iyedM/kubectl-why-fail"
+	Title   = "kubectl-why-fail"
 )
 
 // ErrNoAPIKey is returned when no key is configured. The CLI treats it as

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iyedM/kubectl-whyfail/internal/collector"
+	"github.com/iyedM/kubectl-why-fail/internal/collector"
 )
 
 // pvcSchedulingSignals are the scheduler messages that point at storage rather
