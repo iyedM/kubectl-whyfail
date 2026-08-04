@@ -88,7 +88,7 @@ Grab the archive for your platform from the [latest release](https://github.com/
 
 ```bash
 tar -xzf kubectl-why-fail_linux_amd64.tar.gz
-sudo mv kubectl-why-fail_linux_amd64 /usr/local/bin/kubectl-why-fail
+sudo mv kubectl-why-fail /usr/local/bin/kubectl-why-fail
 ```
 
 (Windows: unzip the `.zip` and place the `.exe` anywhere on your `PATH`.)
